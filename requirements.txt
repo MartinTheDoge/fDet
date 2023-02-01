@@ -1,0 +1,11 @@
+django
+torch
+torchaudio
+torchvision
+cuda11.6
+farm-haystack
+spacy
+spacy-legacy
+spacy-loggers
+en_core_web_sm
+transformers
