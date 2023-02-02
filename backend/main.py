@@ -2,6 +2,7 @@ from torch import no_grad, argmax, softmax, device, cuda
 from transformers import AlbertTokenizerFast, AlbertForSequenceClassification, logging
 from retriever import TextRetrieverV2
 logging.set_verbosity_error()
+
 class TextValidate():
 
     def __init__(self) -> None:
