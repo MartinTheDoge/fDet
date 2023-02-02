@@ -7,5 +7,5 @@ farm-haystack
 spacy
 spacy-legacy
 spacy-loggers
-en_core_web_sm
+spacy-en_core_web_sm
 transformers
