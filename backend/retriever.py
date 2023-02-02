@@ -1,4 +1,5 @@
 # import transformers
+# import wikipediaapi
 import wikipedia
 # import yake
 from haystack.document_stores import InMemoryDocumentStore
@@ -6,7 +7,6 @@ from haystack.nodes import DensePassageRetriever
 import spacy
 import en_core_web_sm
 import re
-
 # Concept
 #class RetrieverV1():
 #
@@ -236,6 +236,7 @@ class TextRetrieverV2():
         spacy.prefer_gpu()
         self.nlp = spacy.load("en_core_web_sm")
         self.nlp = en_core_web_sm.load()
+
         
     def __private_extractKeyWords(self, text) -> list:
         # Extract Subject
@@ -244,15 +245,14 @@ class TextRetrieverV2():
             title = ""
             doc=self.nlp(i)
             sub_toks = [tok for tok in doc]
-            root = 0
             if len(sub_toks) > 0:
                 for i, val in enumerate(sub_toks):
                     if val.dep_ == "ROOT":
                         root = i
-            for i in range(0, root + 1):
+            for i in range(0, len(sub_toks)):
                 if sub_toks[i].dep_ == "nsubj":
                     title += f"{sub_toks[i]} "
-                elif sub_toks[i].dep_ == "compound":
+                elif sub_toks[i].dep_ == "compound" or sub_toks[i].dep_ == "attr":
                     title += f"{sub_toks[i]} "
                 else:
                     titles.append(title)

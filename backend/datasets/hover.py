@@ -16,7 +16,7 @@ class HOVER:
             with open(r"datasets/HoVer/my_test.jsonl", "r") as f:
                 for line in f:
                     self.file.append(json.loads(line))
-            
+                    
     def __len__(self):
         return len(self.file)
 
@@ -72,24 +72,3 @@ class HOVER:
         batch = self.tokenizer.encode_plus(claim, evidence, truncation="longest_first" , max_length=512, padding="max_length", return_tensors="pt")                                     
         return batch, label
 
-# file = json.load(open(r"datasets\HoVer\hover_train_release_v1.1.json", "r"))
-
-# file[0]
-# print("END")
-# file = json.load(open(r"datasets\HoVer\hover_dev_release_v1.1.json", "r"))
-
-
-
-# file = json.load(open(r"datasets\HoVer\hover_train_release_v1.1.json", "r"))
-# file = json.load(open(r"datasets\HoVer\hover_dev_release_v1.1.json", "r"))
-
-
-# def count(file):
-#     sup, ref = 0, 0
-#     for i in file:
-#         if i["label"] == "SUPPORTED": sup += 1
-#         elif i["label"] == "NOT_SUPPORTED": ref += 1
-#     return sup, ref
-
-# s,r = count(file=file)
-# print(f"{s}\n{r}")
