@@ -240,27 +240,31 @@ class TextRetrieverV2():
         
     def __private_extractKeyWords(self, text) -> list:
         # Extract Subject
+        pages = []
         titles = []
+        preps = []
         for i in text:
             title = ""
             doc=self.nlp(i)
             sub_toks = [tok for tok in doc]
-            if len(sub_toks) > 0:
-                for i, val in enumerate(sub_toks):
-                    if val.dep_ == "ROOT":
-                        root = i
             for i in range(0, len(sub_toks)):
-                if sub_toks[i].dep_ == "nsubj":
-                    title += f"{sub_toks[i]} "
-                elif sub_toks[i].dep_ == "compound" or sub_toks[i].dep_ == "attr":
-                    title += f"{sub_toks[i]} "
+                tok = sub_toks[i]
+                if tok.dep_ == "nsubj":
+                    title += f"{tok} "
+                elif tok.dep_ == "compound" or tok.dep_ == "attr":
+                    title += f"{tok} "
+                elif tok.dep_ == 'acomp' or tok.dep_ == "acl" or tok.dep_ == "advcl" or tok.dep_ == "advmod":
+                    preps.append(f"{tok}")
                 else:
                     titles.append(title)
                     title = ""
-            titles.append(title)
-            titles += title.split(" ")
-            titles = [x for x in titles if x != '']       
-        return titles   
+        titles = [x for x in titles if x != '']
+        for i in preps:
+            for j in titles:
+                pages.append(f"{i} {j}")
+        for i in titles:
+            pages.append(i)
+        return pages   
 
     def __private_findDocuments(self, titles) -> list:
         pages = []
@@ -268,15 +272,11 @@ class TextRetrieverV2():
             wikiPages = wikipedia.search(title)
             if len(wikiPages) > 0:
                 try:
-                    page = wikipedia.page(title=wikiPages[0])
+                    page = wikipedia.page(title=wikiPages[0], auto_suggest=False)
                     if page not in pages:
                         pages.append(page) 
                 except wikipedia.DisambiguationError:
                     pass 
-                except wikipedia.PageError: 
-                    page = wikipedia.page(title=wikiPages[0], auto_suggest=False)
-                    if page not in pages:
-                        pages.append(page) 
         return pages
     
     def __private_storeDocuments(self, documents):
