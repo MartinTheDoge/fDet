@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 import sys
@@ -14,6 +14,7 @@ def home_view(request, *args, **kwargs):
     }
     return render(request, "base.html", models)
 
+
 def evaluation_view(request, *args, **kwargs):
     text = request.POST["text"]
     validated_text = TEXTVALIDATE_CLASS.main(text)
@@ -23,3 +24,13 @@ def evaluation_view(request, *args, **kwargs):
         "validated" : validated_text
     }
     return render(request, "base.html", context)
+
+
+def test_view(request):
+    text = request.POST["text"]
+    validated_text = TEXTVALIDATE_CLASS.main(text)
+
+    context = {
+        "validated" : validated_text
+    }
+    return JsonResponse(context)
