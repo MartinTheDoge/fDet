@@ -1,7 +1,4 @@
 django
-torch
-torchaudio
-torchvision
 farm-haystack
 spacy
 spacy-legacy

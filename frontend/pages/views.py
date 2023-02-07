@@ -27,7 +27,7 @@ def evaluation_view(request, *args, **kwargs):
 
 
 def test_view(request):
-    text = request.POST["text"]
+    text = request.GET["text"]
     validated_text = TEXTVALIDATE_CLASS.main(text)
 
     context = {
