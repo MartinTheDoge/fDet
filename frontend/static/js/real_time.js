@@ -1,23 +1,23 @@
-function getTime() {
-    let date, realTime, hours, minutes, seconds;
-    date = new Date();
-    hours = date.getHours();
-    minutes = date.getMinutes();
-    if (minutes < 10) {
-        minutes = "0" + minutes;
-    }
+function getInfo() {
+    const xhttp = new XMLHttpRequest();
+    let text = document.getElementById('eval-input').value;
+    xhttp.open("GET", `/test_view?text=${text}`, true);
+    xhttp.send();
 
-    seconds = date.getSeconds();
-    if (seconds < 10) {
-        seconds = "0" + seconds;
+    xhttp.onreadystatechange = () => {
+        if (xhttp.readyState === 4) {
+            try {
+                let response = xhttp.responseText;
+                let output_text = document.getElementById('output-text');
+                output_text.innerHTML = response.output;
+            } catch (error) {
+                let output_text = document.getElementById('output-text');
+                output_text.innerHTML = error + "\n" + "Error 469 david to zase rozbil :(";
+            }
+        }
     }
-
-    realTime = hours + ":" + minutes + ":" + seconds;
-    return realTime;
 }
 
-function writeTime() {
-    document.getElementById("time").innerHTML = getTime();
-}
-
-window.setInterval("writeTime()", 500);
+// setInterval(() => {
+    
+// }, 500);
