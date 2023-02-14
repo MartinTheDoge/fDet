@@ -7,6 +7,7 @@ function getInfo() {
     xhttp.send();
 
     let data = JSON.parse(xhttp.responseText)["validated"][0];
+    console.log(data);
     let claim = data["claim"]
     let percentage = [(data["supports"] * 100).toFixed(2), (data["refutes"] * 100).toFixed(2)]
     let evidence = data["evidence"]
