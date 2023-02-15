@@ -1,23 +1,24 @@
-function getTime() {
-    let date, realTime, hours, minutes, seconds;
-    date = new Date();
-    hours = date.getHours();
-    minutes = date.getMinutes();
-    if (minutes < 10) {
-        minutes = "0" + minutes;
-    }
+function getInfo() {
+    const outputField = document.getElementById('output-text');
 
-    seconds = date.getSeconds();
-    if (seconds < 10) {
-        seconds = "0" + seconds;
-    }
+    const xhttp = new XMLHttpRequest();
+    let text = document.getElementById('eval-input').value;
+    xhttp.open("GET", `/test_view?text=${text}`, false);
+    xhttp.send();
 
-    realTime = hours + ":" + minutes + ":" + seconds;
-    return realTime;
+    let data = JSON.parse(xhttp.responseText)["validated"][0];
+    console.log(data);
+    let claim = data["claim"]
+    let label = data["label"]
+    let percentage = [(data["supports"] * 100).toFixed(2), (data["refutes"] * 100).toFixed(2)]
+    let evidence = data["evidence"]
+    console.log(claim)
+    console.log(percentage)
+    console.log(evidence)
+
+    outputField.innerHTML = `<b>Claim:</b> ${claim}<br/>`;
+    outputField.innerHTML += `<b>Label:</b> ${label}<br/>`;
+    outputField.innerHTML += `<b>Supports:</b> ${percentage[0]}%<br/>`;
+    outputField.innerHTML += `<b>Refutes:</b> ${percentage[1]}%<br/>`;
+    outputField.innerHTML += `<b>Evidence:</b> <br/>${evidence}<br/>`;
 }
-
-function writeTime() {
-    document.getElementById("time").innerHTML = getTime();
-}
-
-window.setInterval("writeTime()", 500);

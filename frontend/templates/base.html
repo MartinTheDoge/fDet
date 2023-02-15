@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,24 +6,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>fDet TestSite</title>
 
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="../static/css/style.css">
     </head>
     <body>
         
         <section id="everything">
-            <h1 id="title">fDet Test site</h1>
-            <h3>Current time: <span id="time"></span></h3>
-            <h3>Logged in user: {{ request.user }}</h3>
-            <form method="POST" action="evaluation">
-                {% csrf_token %}
-                <section id="input-section">
-                    <textarea id="eval-input" name="text" placeholder="Enter text to evaluate by AI"></textarea>
-                    <input type="submit" id="eval-button" value="Evaluate">
+            <h1 id="title">fDet Test sitec hue hue</h1>
+            <h3>Current test time (not working): <span id="time"></span></h3>
+            {% csrf_token %}
+            <section id="input-section">
+                <textarea id="eval-input" name="text" placeholder="Enter text to evaluate by AI"></textarea>
+                <input name="evalButton" type="submit" id="eval-button" value="Evaluate" onclick="getInfo()">
             <section id="output-section">
-                <h2 id="output-title">Output</h2>
-                <p id="output-text">{{ validated }} {{ input_text }}</p> <!-- Do tohohle dávej output-->
-            
+                <h2 id="output-title">Output test</h2>
+                <p id="output-text" name="output_text"></p> <!-- Do tohohle dávej output-->
 
-        <script src="{% static 'js/real_time.js' %}"></script>
+        <script defer src="../static/js/real_time.js"></script>
+        
     </body>
 </html>
