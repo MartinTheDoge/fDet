@@ -8,7 +8,7 @@ function getCookie(name) {
     return decodeURIComponent(token[0].split('=')[1]);
 }
 
-function fetchResult(text) {
+async function fetchResult(text, output, button) {
     const csrfToken = getCookie('CSRF-TOKEN');
 
     const xhttp = new XMLHttpRequest();
@@ -19,32 +19,18 @@ function fetchResult(text) {
 
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            return JSON.parse(xhttp.responseText)["validated"][0];
+            const data = JSON.parse(xhttp.responseText)["validated"][0];
+            printResults(data, output);
+            button.disabled = false;
         }
     }
 }
 
-function getInfo() {
-    const outputField = document.getElementById('output-text');
-
-    const xhttp = new XMLHttpRequest();
-    let text = document.getElementById('eval-input').value;
-    xhttp.open("GET", `/test_view?text=${text}`, true);
-    xhttp.send();
-
-    let data = JSON.parse(xhttp.responseText)["validated"][0];
-    console.log(data);
-    let claim = data["claim"]
-    let label = data["label"]
-    let percentage = [(data["supports"] * 100).toFixed(2), (data["refutes"] * 100).toFixed(2)]
-    let evidence = data["evidence"]
-    console.log(claim)
-    console.log(percentage)
-    console.log(evidence)
-
-    outputField.innerHTML = `<b>Claim:</b> ${claim}<br/>`;
-    outputField.innerHTML += `<b>Label:</b> ${label}<br/>`;
-    outputField.innerHTML += `<b>Supports:</b> ${percentage[0]}%<br/>`;
-    outputField.innerHTML += `<b>Refutes:</b> ${percentage[1]}%<br/>`;
-    outputField.innerHTML += `<b>Evidence:</b> <br/>${evidence}<br/>`;
+function printResults(data, output) {
+    output.innerHTML = `<b>Claim:</b> ${data.claim}<br/>`;
+    output.innerHTML += `<b>Label:</b> ${data.label}<br/>`;
+    output.innerHTML += `<b>Supports:</b> ${(data.supports * 100).toFixed(2)
+}%<br/>`;
+    output.innerHTML += `<b>Refutes:</b> ${(data.refutes * 100).toFixed(2) }%<br/>`;
+    output.innerHTML += `<b>Evidence:</b> <br/>${data.evidence}<br/>`;
 }
