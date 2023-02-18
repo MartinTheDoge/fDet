@@ -5,5 +5,14 @@ const button = document.querySelector('#eval-button');
 button.addEventListener("click", c => {
     const text = input.value;
     button.disabled = true;
-    fetchResult(text, output, button);
+    output.innerHTML = "Loading...";
+    
+    let processResult = async () => {
+        let result = await fetchResult(text);
+        result = result["validated"][0];
+        printResults(result, output);
+        button.disabled = false;
+    }
+    processResult();
 })
+
