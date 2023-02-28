@@ -20,8 +20,8 @@ class TextRetrieverV2():
         )
 
     def __private_extractKeyWords(self, text) -> list:
-        titles = []
-        for i in text:
+        # Extract Subject
+        pages = []
             temp_titles = self.kw_extractor.extract_keywords(i)
             for title in temp_titles:
                 titles.append(title[0])
