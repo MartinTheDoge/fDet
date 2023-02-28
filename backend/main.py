@@ -45,4 +45,5 @@ class TextValidate():
                 print(f"Claim is {out}\nSupports {100*supports:>0.1f} %, \tRefutes {100*refutes:>0.1f} %")
                 print(f"Evidence:\n{evidence}")
                 results.append({"claim": claim, "label" : out, "supports" : supports, "refutes" : refutes, "evidence" : evidence})
+        self.retriever.public_deleteDatabase()
         return results

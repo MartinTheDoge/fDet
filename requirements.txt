@@ -1,11 +1,7 @@
 django
-torch
-torchaudio
-torchvision
-cuda11.7
 farm-haystack
 spacy
 spacy-legacy
 spacy-loggers
-spacy-en_core_web_sm
 transformers
+wikipedia
