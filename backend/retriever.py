@@ -32,6 +32,10 @@ class TextRetrieverV2():
     async def __fetch_wikipedia_page(self, title):
         wikiPages = self.wiki.search(title)
         page = None
+        
+        if wikiPages == []: 
+            wikiPages = self.wiki.search("Rickrolling")
+        
         for i in wikiPages:
             if i[0].lower() == title.lower():
                 page = i
@@ -46,7 +50,7 @@ class TextRetrieverV2():
         results = list({tup: None for tup in results})
         return results
 
-    def __storeDocuments(self, documents):
+    def __storeDocuments(self, documents):        
         dicts = []
         for i in documents:
             sentences = []
