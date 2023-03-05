@@ -1,5 +1,4 @@
 import json
-from datasets.feverous import FEVEROUS
 
 def analyze(path):
     SUP,REF,NEI = 0, 0, 0
