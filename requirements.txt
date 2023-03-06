@@ -3,4 +3,3 @@ fastapi
 matplotlib
 farm-haystack
 transformers
-wikipedia
