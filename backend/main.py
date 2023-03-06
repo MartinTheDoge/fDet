@@ -9,9 +9,8 @@ class TextValidate():
         print(f"Loading text validator")
         self.device = device("cuda" if cuda.is_available() else "cpu")
         print(f"You are using {self.device}")
-        access_token = "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"
-        self.tokenizer = AlbertTokenizerFast.from_pretrained('Dzeniks/alberta_fact_checking', use_auth_token=access_token, longest_first=False)
-        self.model = AlbertForSequenceClassification.from_pretrained('Dzeniks/alberta_fact_checking', use_auth_token=access_token, return_dict=True, num_labels=2)    
+        self.tokenizer = AlbertTokenizerFast.from_pretrained('Dzeniks/alberta_fact_checking', longest_first=False)
+        self.model = AlbertForSequenceClassification.from_pretrained('Dzeniks/alberta_fact_checking', return_dict=True, num_labels=2)    
         self.model.to(self.device)
         self.retriever = TextRetrieverV2()
         print(f"Loaded")
@@ -21,9 +20,9 @@ class TextValidate():
         results = []
         claims = text.split(".")
         claims = [item for item in claims if item != ""]
-        self.retriever.public_createDatabase(claims)
+        self.retriever.create_database(claims)
         for claim in claims:
-            evidence = self.retriever.public_extractPassage(claim)
+            evidence = self.retriever.extract_passage(claim, 3)
             if evidence == "":
                 print("NOT ENOUGH INFO")
                 results.append({"claim": claim, "label" : "NOT ENOUGH INFO", "supports" : None, "refutes" : None, "evidence" : None})
@@ -45,5 +44,5 @@ class TextValidate():
                 print(f"Claim is {out}\nSupports {100*supports:>0.1f} %, \tRefutes {100*refutes:>0.1f} %")
                 print(f"Evidence:\n{evidence}")
                 results.append({"claim": claim, "label" : out, "supports" : supports, "refutes" : refutes, "evidence" : evidence})
-        self.retriever.public_deleteDatabase()
+        self.retriever.delete_database()
         return results

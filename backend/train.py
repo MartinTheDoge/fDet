@@ -1,26 +1,18 @@
 import torch
 import transformers
-import gym
-from datasets.hover import HOVER
-from datasets.fever import FEVER
-from datasets.feverous import FEVEROUS
+from gym import Gym_albert
+from datasets import load_dataset
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 
 def test():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"You are using {device}")
     
-    access_token = "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"
-    tokenizer = transformers.AlbertTokenizerFast.from_pretrained('Dzeniks/alberta_fact_checking', use_auth_token=access_token, longest_first=False)
-    model = transformers.AlbertForSequenceClassification.from_pretrained('Dzeniks/alberta_fact_checking', use_auth_token=access_token, return_dict=True, num_labels=2)
-    load = torch.load("LastBackUp.pth")
-    model.load_state_dict(load)
+    tokenizer = transformers.AlbertTokenizerFast.from_pretrained('Dzeniks/alberta_fact_checking', longest_first=False)
+    model = transformers.AlbertForSequenceClassification.from_pretrained('Dzeniks/alberta_fact_checking', return_dict=True, num_labels=2)
     model.to(device)
     claim = "Albert einstein work in the field of computer science"
     evidence = "Albert Einstein (/ˈaɪnstaɪn/ EYEN-styne;[6] German: [ˈalbɛʁt ˈʔaɪnʃtaɪn] (listen); 14 March 1879 – 18 April 1955) was a German-born theoretical physicist,[7] widely acknowledged to be one of the greatest and most influential physicists of all time."
-
-    # claim = "Miloš Zeman has been president for 10 years." 
-    # evidence = "Miloš Zeman is a Czech politician serving as the third and current President of the Czech Republic since 2013."
     
     model.to(device)
     x = tokenizer.encode_plus(claim, evidence, truncation="longest_first" , max_length=512, padding="max_length", return_tensors="pt")                                     
@@ -39,62 +31,48 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"You are using {device}")
 
-    access_token = "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"
-    tokenizer = transformers.AlbertTokenizerFast.from_pretrained('Dzeniks/alberta_fact_checking', use_auth_token=access_token, longest_first=False)
-    model = transformers.AlbertForSequenceClassification.from_pretrained('Dzeniks/alberta_fact_checking', use_auth_token=access_token, return_dict=True, num_labels=2)
+    tokenizer = transformers.AlbertTokenizerFast.from_pretrained('albert-base-v2', longest_first=False)
+    model = transformers.AlbertForSequenceClassification.from_pretrained('albert-base-v2', return_dict=True, num_labels=3)
     
     model.to(device)
 
-    train_dataset = HOVER(tokenizer, "train")
+    batch_size = 2
+    train_dataset = load_dataset("Dzeniks/fever_3way", split="train")
+    
 
-    test_dataset = HOVER(tokenizer, "test")
-    test_dataset0 = FEVER(tokenizer, "test")
-    test_dataset1 = FEVER(tokenizer, "val")
-    test_dataset2 = FEVEROUS(tokenizer, "test")
+    def collate_fn(data):
+        tokens = {"input_ids":torch.zeros((len(data), 1, 512), dtype=torch.int64), "attention_mask":torch.zeros((len(data), 1, 512), dtype=torch.int64), "token_type_ids": torch.zeros((len(data), 1, 512), dtype=torch.int64)}
+        labels = torch.zeros(len(data), dtype=torch.int64)
+        for num, i in enumerate(data):
+            token = tokenizer.encode_plus(i["claim"], i["evidence"], truncation="longest_first", max_length=512, padding="max_length", return_tensors="pt")
+            tokens["input_ids"][num] = token["input_ids"]
+            tokens["attention_mask"][num] = token["attention_mask"]
+            tokens["token_type_ids"][num] = token["token_type_ids"]
+            labels[num] = i["label"]                                       
+        return tokens, labels
 
-    batch_size = 8
-
-    train_dataloader = DataLoader(
-        train_dataset,
+    loader_test = DataLoader(
+        dataset= train_dataset,
+        batch_size=batch_size,
         sampler=RandomSampler(train_dataset),
-        batch_size=batch_size
-    )
-
-    test_dataloader = DataLoader(
-        train_dataset,
-        sampler=SequentialSampler(train_dataset),
-        batch_size=1
-    )
-
-    test_dataloader0 = DataLoader(
-            test_dataset0,
-            sampler=SequentialSampler(test_dataset0),
-            batch_size=1
+        collate_fn=collate_fn
         )
-
-    test_dataloader1 = DataLoader(
-            test_dataset1,
-            sampler=SequentialSampler(test_dataset1),
-            batch_size=1
-        )
-
-    test_dataloader2 = DataLoader(
-            test_dataset2,
-            sampler=SequentialSampler(test_dataset2),
-            batch_size=1
+    
+    test_dataset = load_dataset("Dzeniks/fever_3way", split="test")
+    
+    test_test = DataLoader(
+        dataset= test_dataset,
+        batch_size=1,
+        sampler=SequentialSampler(test_dataset),
+        collate_fn=collate_fn
         )
 
     optimizer = torch.optim.Adam(model.parameters(), lr = 2e-6, eps = 1e-8)
     lossFn = torch.nn.CrossEntropyLoss()
 
-    gymBase = gym.Gym("ALBERTA")
+    gym_albert = Gym_albert(model, tokenizer, "TEST")
 
-    #gymBase.trainSqce(model, 1, train_dataloader, test_dataset, lossFn, optimizer)
-
-    gymBase.test(model, test_dataloader, lossFn)
-    gymBase.test(model, test_dataloader0, lossFn)
-    gymBase.test(model, test_dataloader1, lossFn)
-    gymBase.test(model, test_dataloader2, lossFn)
+    gym_albert.train_sqce(1, loader_test, [test_test], lossFn, optimizer)
 
 
 train()

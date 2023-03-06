@@ -1,7 +1,6 @@
 django
+fastapi
+matplotlib
 farm-haystack
-spacy
-spacy-legacy
-spacy-loggers
 transformers
 wikipedia
